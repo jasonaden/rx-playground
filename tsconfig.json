@@ -3,7 +3,12 @@
     "target": "es5",
     "module": "es6",
     "moduleResolution": "node",
-    "sourceMap": true
+    "sourceMap": true,
+    "lib": ["es5", "es6", "dom", "es2015.promise", "es2015.collection", "es2015.iterable"],
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "jsx": "react",
+    "skipLibCheck": true
   },
   "exclude": [
     "node_modules",
