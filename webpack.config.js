@@ -5,6 +5,8 @@ const DashboardPlugin = require('webpack-dashboard/plugin');
 const nodeEnv = process.env.NODE_ENV || 'development';
 const isProd = nodeEnv === 'production';
 
+const rxPaths = require('rxjs/_esm5/path-mapping');
+
 var config = {
     devtool: isProd ? 'hidden-source-map' : 'cheap-eval-source-map',
     context: path.resolve('./src'),
@@ -29,7 +31,8 @@ var config = {
     },
     resolve: {
         extensions: [".ts", ".js"],
-        modules: [path.resolve('./src'), 'node_modules']
+        modules: [path.resolve('./src'), 'node_modules'],
+        alias: rxPaths(path.resolve(__dirname, 'node_modules'))
     },
     plugins: [
         new webpack.DefinePlugin({
@@ -37,6 +40,8 @@ var config = {
                 NODE_ENV: JSON.stringify(nodeEnv)
             }
         }),
+        new webpack.HashedModuleIdsPlugin(),
+        new webpack.optimize.ModuleConcatenationPlugin(),
         new HtmlWebpackPlugin({
             title: 'Typescript Webpack Starter',
             template: '!!ejs-loader!src/index.html'
@@ -47,8 +52,9 @@ var config = {
             filename: 'vendor.bundle.js'
         }),
         new webpack.optimize.UglifyJsPlugin({
-            compress: { warnings: false },
-            output: { comments: false },
+            mangle: false,
+            compress: { warnings: false, pure_getters: true, passes: 3, screw_ie8: true, sequences: false },
+            output: { comments: false, beautify: true },
             sourceMap: false
         }),
         new DashboardPlugin(),

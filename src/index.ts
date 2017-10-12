@@ -1,42 +1,36 @@
-
+/** PURE_IMPORTS_START rxjs_operators_index PURE_IMPORTS_END */
 const log = console.log.bind(console);
-import { Observable, Observer, Subject, BehaviorSubject, ReplaySubject, Subscription } from 'rxjs';
-import './hello.tsx';
 
-let timer$ = Observable.interval(500)
-  .do(x => log('source ' + x))
-  .share();
 
-const obsA = {
-  next: (x: any) => log('A next: ' + x),
-  error: (err: Error) => log('A error: ' + err.message),
-  complete: () => log('A complete')
+import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
+import {map} from 'rxjs/operators/index';
+// import {map} from 'rxjs/operators/map';
+
+function observer(marker: string = '') {
+  return {
+    next: (x: any) => log(`${marker} next: ${x}`),
+    error: (err: Error) => log(`${marker} error: ${err.message}`),
+    complete: () => log(`${marker} complete`)
+  }
 };
 
-const obsB = {
-  next: (x: any) => log('B next: ' + x),
-  error: (err: Error) => log('B error: ' + err.message),
-  complete: () => log('B complete')
+
+class Hello {
+  subject = new Subject<number>();
+
+  constructor() {
+
+    this.subject.pipe(
+      map(ev => +1)
+    ).subscribe(x => console.log(x));
+  }
+
 }
 
-let subA: Subscription;
-let subB: Subscription;
+export const helloWorld = new Hello();
 
-setTimeout(() => {
-  subA = timer$.subscribe(obsA);
-  log('ObsA Subscribed');
-}, 3000);
+helloWorld.subject.next(1);
 
-setTimeout(() => {
-  subB = timer$.subscribe(obsB)
-  log('ObsB Subscribed');
-}, 2000)
+console.log(helloWorld);
 
-setTimeout(() => {
-  subA.unsubscribe();
-  subB.unsubscribe();
-}, 5000);
-
-setTimeout(() => {
-  subA = timer$.subscribe(obsA)
-}, 10000);
