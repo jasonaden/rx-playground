@@ -1,14 +1,25 @@
 
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import {Subject} from 'rxjs/Subject';
-import {map, scan, delay} from 'rxjs/operators/index';
+import {Subject} from 'rxjs'; // NOTE: Importing from rxjs/Subject (through compat layer) produces typing errors
+import {map, scan, delay} from 'rxjs/operators';
+
+import * as Rx from 'rxjs/Rx';
+
+import 'rxjs/add/operator/buffer';
+
+import {Observable} from 'rxjs/internal/Observable';
+
+let x: Rx.Observable<any>;
+
+// import {Subject} from 'rxjs/Subject';
+// import {map, scan, delay} from 'rxjs/operators/index';
 // import {scan} from 'rxjs/operators/scan';
 // import {map} from 'rxjs/operators/map';
 // import {delay} from 'rxjs/operators/delay';
 
 class Hello extends React.Component<{name: string}, {count: number}> {
-  subject = new Subject<React.SyntheticEvent<HTMLElement>>();
+  subject = new Rx.Subject<React.SyntheticEvent<HTMLElement>>();
 
   constructor() {
     super();
@@ -16,9 +27,9 @@ class Hello extends React.Component<{name: string}, {count: number}> {
 
     let evt: React.MouseEvent<any>;
     this.subject.pipe(
-      map(ev => +1),
-      scan((acc, x) => acc+x, 0),
-      delay(1000)
+      Rx.operators.map(ev => +1),
+      Rx.operators.scan((acc, x) => acc+x, 0),
+      Rx.operators.delay(1000)
     ).subscribe(x => this.setState({count: x} as any));
   }
 
